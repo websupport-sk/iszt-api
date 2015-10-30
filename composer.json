@@ -10,9 +10,7 @@
         }
     ],
     "require": {
-        "php": "~5.3",
-        "lib-curl": "~1.0",
-        "lib-gnupg": "~1.0"
+        "php": "~5.3"
     },
     "autoload": {
         "psr-4": {
