@@ -1,0 +1,22 @@
+{
+    "name": "websupport/iszt-api",
+    "description": "Simple API wrapper for official .hu domain registry",
+	"keywords": ["iszt", "hu", "domains", "registration"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Tomáš Tatarko",
+            "email": "tomas.tatarko@websupport.sk"
+        }
+    ],
+    "require": {
+        "php": "~5.3",
+        "lib-curl": "~1.0",
+        "lib-gnupg": "~1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Websupport\\Iszt\\": "src/"
+        }
+    }
+}
