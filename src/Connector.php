@@ -108,6 +108,12 @@ class Connector
     public $timeout = 30;
 
     /**
+     * Default NS server to use
+     * @var string
+     */
+    public $nsServer;
+
+    /**
      * Instance of gnupg library
      * @var resource
      */
@@ -326,7 +332,7 @@ class Connector
             'uj_domain', '<DOMAIN DSTATE="BEJEGYZES" RIGHT="NON_PRI"'
             . ' OWNER="nic-hdl" ADMIN_C="nic-hdl" TECH_C="nic-hdl"'
             . ' ZONE_C="nic-hdl" ELECTRONIC="yes"><DNAME>' . $domainName
-            . '</DNAME><DNS>ns1.websupport.sk</DNS><ORG><IDENT>'
+            . '</DNAME><DNS>' . $this->nsServer . '</DNS><ORG><IDENT>'
             . $contactId . '</IDENT></ORG><PERSON ROLE="admin-c"><IDENT>'
             . $techContact . '</IDENT></PERSON><PERSON ROLE="tech-c">'
             . '<IDENT>' . $techContact . '</IDENT></PERSON><PERSON'
@@ -439,7 +445,7 @@ class Connector
             'objektum_attributum_modositas',
             '<OBJ><OBJID>' . $info['domain_hun_id'] . '</OBJID>'
             . '<ATTRNAME>domain_pri_ns</ATTRNAME>'
-            . '<VALUE>ns1.websupport.sk</VALUE></OBJ></ATTRIBUTES>'
+            . '<VALUE>' . $this->nsServer . '</VALUE></OBJ></ATTRIBUTES>'
             . '<ATTRIBUTES><OBJ><OBJID>' . $info['domain_hun_id']
             . '</OBJID><ATTRNAME>domain_mnt_org_id</ATTRNAME>'
             . '<VALUE>' . $registrarId . '</VALUE></OBJ>',
@@ -709,12 +715,28 @@ class Connector
     public function getNsRecords($domainName, $cached = true) 
     {
         $info = $this->domainInfo($domainName, $cached);
-        return $this->verifyBasicResponse(
-            'objektum_attributum_modositas',
-            '<OBJ><OBJID>' . $info['domain_hun_id'] . '</OBJID><ATTRNAME>'
-            . 'domain_pri_ns</ATTRNAME><VALUE>' . $nsServer
-            . '</VALUE></OBJ>',
-            $domainName
+        $nsServers = '';
+        $results = array();
+
+        if (isset($info['domain_pri_ns']) && $info['domain_pri_ns']) {
+            $nsServers .= $info['domain_pri_ns'];
+        }
+
+        if (isset($info['domain_sec_ns']) && $info['domain_sec_ns']) {
+            $nsServers .= $info['domain_sec_ns'];
+        }
+
+        preg_match_all(
+            '#([^|\[\]]+)(\[([\d\.]+)\])?#',
+            $nsServers,
+            $matches,
+            PREG_SET_ORDER
         );
+
+        foreach ($matches as $match) {
+            $results[$match[3]] = $match[1];
+        }
+
+        return $results;
     }
 }
