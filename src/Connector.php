@@ -645,7 +645,35 @@ class Connector
                 . ' HASH="%s" COMMENT=""></DECL_REPLY>',
                 $requestId,
                 $ipAddress,
-                $captcha,
+                htmlspecialchars($captcha, ENT_QUOTES, 'UTF-8'),
+                date('Y-m-d H:i:s'),
+                $hash
+            )
+        );
+    }
+
+    /**
+     * Checks declaration confirmation
+     * @param integer $requestId Declaration request ID
+     * @param string  $ipAddress Client's IP address
+     * @param string  $captcha   Captcha code
+     * @param string  $hash      Declaration md5 hash
+     * @return boolean
+     */
+    public function tryCaptchaCode(
+        $requestId,
+        $ipAddress,
+        $captcha,
+        $hash
+    ) {
+        return $this->verifyBasicResponse(
+            'nyilatkozat_ellenorzes',
+            sprintf(
+                '<DECL_REPLY ID="%\'010d" IP="%s" CAPTCHA="%s" TIMESTAMP="%s"'
+                . ' HASH="%s" COMMENT=""></DECL_REPLY>',
+                $requestId,
+                $ipAddress,
+                htmlspecialchars($captcha, ENT_QUOTES, 'UTF-8'),
                 date('Y-m-d H:i:s'),
                 $hash
             )
