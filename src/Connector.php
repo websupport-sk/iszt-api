@@ -787,4 +787,32 @@ class Connector
 
         return $results;
     }
+
+    /**
+     * Uploads document for specific domain
+     * @param string  $domainName Domain name to upload document for
+     * @param type    $subject    Subject of the document entry
+     * @param type    $filePath   Path to the existing file document
+     * @param type    $text       Note for document
+     * @param boolean $cached     Use cached domain meta data?
+     * @return boolean
+     */
+    public function uploadDocument(
+        $domainName,
+        $subject,
+        $filePath,
+        $text = null,
+        $cached = true
+    ) {
+        $info = $this->domainInfo($domainName, $cached);
+        $parts = explode('.', $filePath);
+        $this->verifyBasicResponse(
+            'megjegyzes_felvitel', '<REMARK><OBJID>'
+            . $info['domain_hun_id'] . '</OBJID><SUBJECT>'
+            . htmlspecialchars($subject, ENT_QUOTES, 'UTF-8') . '</SUBJECT>'
+            . '<TEXT>' . htmlspecialchars($text, ENT_QUOTES, 'UTF-8')
+            . '</TEXT><FILE>' . base64_encode(file_get_contents($filePath))
+            . '</FILE><FILETYPE>' . end($parts) . '</FILETYPE></REMARK>'
+        );
+    }
 }
