@@ -39,6 +39,11 @@ class Connector
     const STATE_DEACTIVATED = 30;
 
     /**
+     * State used for non-automatic domain prolong (with zone disfunctional)
+     */
+    const STATE_ZONE_DEACTIVATED = 31;
+
+    /**
      * First state when domain is fully working but in conditional use
      */
     const STATE_CONDITIONAL_USE = 35;
@@ -419,6 +424,21 @@ class Connector
         return $this->changeDomainStatus(
             $domainName,
             self::STATE_DEACTIVATED,
+            $cached
+        );
+    }
+
+    /**
+     * Put domain into state where in does not exists in the zone no more
+     * @param string  $domainName Domain name to manipulate
+     * @param boolean $cached     Use cached domain meta data?
+     * @return boolean
+     */
+    public function deactivateZoneDomain($domainName, $cached = true)
+    {
+        return $this->changeDomainStatus(
+            $domainName,
+            self::STATE_ZONE_DEACTIVATED,
             $cached
         );
     }
