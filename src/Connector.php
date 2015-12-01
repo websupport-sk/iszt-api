@@ -447,12 +447,17 @@ class Connector
      * Requests domain transfer
      * @param string  $domainName  Domain name to manipulate
      * @param integer $registrarId Our registrar ID to check
+     * @param string  $nsServer    NS server to set (with performing regcheck)
      * @param boolean $cached      Use cached domain meta data?
      * @return boolean
      * @throws RequestError
      */
-    public function transferDomain($domainName, $registrarId, $cached = true) 
-    {
+    public function transferDomain(
+        $domainName,
+        $registrarId,
+        $nsServer = null,
+        $cached = true
+    ) {
         if ($this->isDomainOurs($domainName, $registrarId, $cached)) {
             throw new RequestError(
                 'Domain transfer is not posible - domain belongs to us',
@@ -461,15 +466,18 @@ class Connector
         }
 
         $info = $this->domainInfo($domainName);
+        $request = '<OBJ><OBJID>' . $info['domain_hun_id'] . '</OBJID>'
+        . '<ATTRNAME>domain_mnt_org_id</ATTRNAME><VALUE>' . $registrarId
+        . '</VALUE></OBJ>';
+
+        if ($nsServer) {
+            $request .= '</ATTRIBUTES><ATTRIBUTES><OBJ><OBJID>'
+            . $info['domain_hun_id'] . '</OBJID><ATTRNAME>domain_pri_ns'
+            . '</ATTRNAME><VALUE>' . $nsServer . '</VALUE></OBJ>';
+        }
+
         return $this->verifyBasicResponse(
-            'objektum_attributum_modositas',
-            '<OBJ><OBJID>' . $info['domain_hun_id'] . '</OBJID>'
-            . '<ATTRNAME>domain_pri_ns</ATTRNAME>'
-            . '<VALUE>' . $this->nsServer . '</VALUE></OBJ></ATTRIBUTES>'
-            . '<ATTRIBUTES><OBJ><OBJID>' . $info['domain_hun_id']
-            . '</OBJID><ATTRNAME>domain_mnt_org_id</ATTRNAME>'
-            . '<VALUE>' . $registrarId . '</VALUE></OBJ>',
-            $domainName
+            'objektum_attributum_modositas', $request, $domainName
         );
     }
 
