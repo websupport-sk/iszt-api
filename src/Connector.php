@@ -308,7 +308,7 @@ class Connector
      */
     protected function validateDomainName($domainName) 
     {
-        if (!preg_match('/^[^.]+\.hu$/', $domainName)) {
+        if (!preg_match('/^[^.]+(\.co)?\.hu$/', $domainName)) {
             throw new InvalidArgument('Invalid domain name', $domainName);
         }
         
