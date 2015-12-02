@@ -802,21 +802,32 @@ class Connector
 
     /**
      * Uploads document for specific domain
-     * @param string  $domainName Domain name to upload document for
-     * @param type    $subject    Subject of the document entry
-     * @param type    $filePath   Path to the existing file document
-     * @param type    $text       Note for document
-     * @param boolean $cached     Use cached domain meta data?
+     * @param string $domainName  Domain name to upload document for
+     * @param string $registrarId Registrar ID for searching relevant domain ID
+     * @param type   $subject     Subject of the document entry
+     * @param type   $filePath    Path to the existing file document
+     * @param type   $text        Note for document
      * @return boolean
      */
     public function uploadDocument(
         $domainName,
+        $registrarId,
         $subject,
         $filePath,
-        $text = null,
-        $cached = true
+        $text = null
     ) {
-        $info = $this->domainInfo($domainName, $cached);
+        $domains = $this->searchDomains(
+            array(
+            'domain_name' => $domainName,
+            'domain_mnt_org_id' => $registrarId,
+            )
+        );
+
+        if (!count($domains)) {
+            throw new DomainNotFound('Domain not found', $domainName);
+        }
+
+        $info = current($domains);
         $parts = explode('.', $filePath);
         $this->verifyBasicResponse(
             'megjegyzes_felvitel', '<REMARK><OBJID>'
