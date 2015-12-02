@@ -828,6 +828,12 @@ class Connector
         }
 
         $info = current($domains);
+        foreach ($domains as $domain) {
+            if ($domain['domain_mnt_org_id'] == $registrarId) {
+                $info = $domain;
+            }
+        }
+
         $parts = explode('.', $filePath);
         $this->verifyBasicResponse(
             'megjegyzes_felvitel', '<REMARK><OBJID>'
