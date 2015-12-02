@@ -317,9 +317,11 @@ class Connector
 
     /**
      * Register new domain by given contact IDs
-     * @param string $domainName  Domain name to register
-     * @param string $contactId   Domain onwer's contact ID
-     * @param string $techContact Domain technical/admin/zone contact ID
+     * @param string $domainName   Domain name to register
+     * @param string $contactId    Domain onwer's contact ID
+     * @param string $techContact  Domain technical contact ID
+     * @param string $adminContact Domain admin contact ID
+     * @param string $zoneContact  Domain zone contact ID
      * @return integer ID of the created domain
      * @throws InvalidArgument In case that domain is not free (able to register)
      * @throws ResponseError In case that domain can not be registered
@@ -327,7 +329,9 @@ class Connector
     public function registerNewDomainByContactId(
         $domainName,
         $contactId,
-        $techContact
+        $techContact,
+        $adminContact,
+        $zoneContact
     ) {
         if (!$this->checkDomainAvailability($domainName)) {
             throw new InvalidArgument('Domain is not free', $domainName);
@@ -339,9 +343,9 @@ class Connector
             . ' ZONE_C="nic-hdl" ELECTRONIC="yes"><DNAME>' . $domainName
             . '</DNAME><DNS>' . $this->nsServer . '</DNS><ORG><IDENT>'
             . $contactId . '</IDENT></ORG><PERSON ROLE="admin-c"><IDENT>'
-            . $techContact . '</IDENT></PERSON><PERSON ROLE="tech-c">'
+            . $adminContact . '</IDENT></PERSON><PERSON ROLE="tech-c">'
             . '<IDENT>' . $techContact . '</IDENT></PERSON><PERSON'
-            . ' ROLE="zone-c"><IDENT>' . $techContact . '</IDENT></PERSON>'
+            . ' ROLE="zone-c"><IDENT>' . $zoneContact . '</IDENT></PERSON>'
             . '</DOMAIN>',
             $domainName
         );
